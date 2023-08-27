@@ -12,7 +12,11 @@ from collections import defaultdict
 from config.config import OUT_SCORES
 from utils.selection import *
 
-
+# select_condacc.py --model ${gpt2} --task $t --ckpt_dir ${ckpt} --useful_size ${usize} --n_trunc ${n_trunc}
+# gpt-j-6b glue-sst2  Dicl/${gpt2}/label_gle-sst2
+# n_trunc=50
+# usize=20
+# python select_condacc.py --model gpt-j-6b --task glue-sst2 --ckpt_dir Dicl/gpt-j-6b/label_glue-sst2 --useful_size 20 --n_trunc 50
 def main(args):
     args.model = args.model.lower()
     n_labels, n_shots = setup(args.task)

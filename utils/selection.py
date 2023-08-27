@@ -77,10 +77,7 @@ class ICData():
         self.n_perm = n_perm
         self.n_train_sets = n_train_sets
         self.is_unlabel = is_unlabel
-
-        # set logits, n_labels, n_train_sets
         self.load_target_model_logits(task)
-        # set permute_ids, train_ids, all_prompt_labels
         self.load_meta(task)
 
     def load_target_model_logits(self, task):

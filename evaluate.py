@@ -22,7 +22,6 @@ from metaicl.data import MetaICLData
 from utils.data import load_data, random_subset_of_comb
 from config.config import OUT_SELECT
 
-
 def main(logger, args):
 
     if args.gpt2.startswith("gpt2"):
@@ -57,7 +56,10 @@ def main(logger, args):
 
     seed = args.seed # shorten name
     eval_data = load_data(args.split, 500, seed, args.dataset)
-
+    print("-------")
+    print(eval_data)
+    print("-------")
+    
     n_class = len(eval_data[0]["options"])
     test_task = eval_data[0]["task"]
     logger.info("-"*50)
@@ -94,11 +96,9 @@ def save_performance(args, task, probs, all_perf):
     np.save(os.path.join(cache_dir, f'{args.mode}-{args.split}-acc.npy'), all_perf)
     print('Acc:')
     print(repr(all_perf))
-
     print(all_perf.shape)
     all_perf_ = all_perf[-50:]
     print(f"Avg ± Std: {all_perf_.mean():.3f} ± {all_perf_.std():.3f}, Min:{all_perf_.min():.3f}")
-
 
 def run(logger, task, metaicl_data, metaicl_model, train_data, eval_data, seed,
         is_classification):
@@ -114,8 +114,6 @@ def run(logger, task, metaicl_data, metaicl_model, train_data, eval_data, seed,
     logger.info("Accuracy=%s" % perf)
 
     return probs, perf
-
-
 
 if __name__=='__main__':
 
@@ -135,9 +133,10 @@ if __name__=='__main__':
     parser.add_argument("--gpt2", type=str, default="gpt-j-6b")
     parser.add_argument("--mode", type=str, default="Random")
     parser.add_argument("--log_file", default=None, type=str)
+    parser.add_argument("--cuda_id", default=0, type=int)
 
     args = parser.parse_args()
-
+    torch.cuda.set_device(args.cuda_id)
     handlers = [logging.StreamHandler()]
     if args.log_file is not None:
         handlers.append(logging.FileHandler(args.log_file))
@@ -149,3 +148,6 @@ if __name__=='__main__':
     logger.info(args)
 
     main(logger, args)
+
+# nohup python evaluate.py --dataset glue-sst2 --gpt2 gpt-j-6b --mode CondAcc-good --k 4 --split test --test_batch_size 16 --max_length_per_example 128 --use_demonstrations --cuda_id 0 &# 
+# nohup python evaluate.py --dataset glue-sst2 --gpt2 gpt-j-6b --mode Infmax-good --k 4 --split test --test_batch_size 16 --max_length_per_example 128 --use_demonstrations --cuda_id 1 & # 
